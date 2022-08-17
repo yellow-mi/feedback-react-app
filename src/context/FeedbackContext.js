@@ -4,25 +4,33 @@ import { v4 as uuidv4 } from "uuid";
 const FeedbackContext = createContext();
 
 export const FeedbackProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState([]);
   const [feedbackEdit, setFeedbackEdit] = useState({
     item: {},
     edit: false,
-  })
+  });
 
   useEffect(() => {
-    fetchFeedback()
-  }, [])
+    fetchFeedback();
+  }, []);
 
   // Fetch feedback data
   const fetchFeedback = async () => {
-    const response = await fetch("http://localhost:5000/feedback?_sort=id&_order=desc")
-    const data = await response.json()
+    /* const response = await fetch("http://localhost:5000/feedback?_sort=id&_order=desc")
+    // const data = await response.json()
 
-    setFeedback(data)
-    setIsLoading(false)
-  }
+    // setFeedback(data)
+    setIsLoading(false) */
+    fetch("http://localhost:5000/feedback?_sort=id&_order=desc")
+      .then((response) =>
+        response.json().catch(console.log("Error cathing data"))
+      )
+      .then((data) => {
+        setFeedback(data);
+        setIsLoading(false);
+      });
+  };
 
   // Add feedback
   const addFeedback = (newFeedback) => {
@@ -39,18 +47,25 @@ export const FeedbackProvider = ({ children }) => {
 
   // Update feedback item
   const updateFeedback = (id, updatedItem) => {
-    setFeedback(feedback.map((item) => item.id === id ? {
-      ...item, ...updatedItem 
-    } : item))
-  }
+    setFeedback(
+      feedback.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              ...updatedItem,
+            }
+          : item
+      )
+    );
+  };
 
   // Set item to be updated
   const editFeedback = (item) => {
     setFeedbackEdit({
       item,
       edit: true,
-    })
-  }
+    });
+  };
 
   return (
     <FeedbackContext.Provider
@@ -61,7 +76,7 @@ export const FeedbackProvider = ({ children }) => {
         feedbackEdit,
         feedback,
         isLoading,
-        updateFeedback
+        updateFeedback,
       }}
     >
       {children}
@@ -69,4 +84,4 @@ export const FeedbackProvider = ({ children }) => {
   );
 };
 
-export default FeedbackContext
+export default FeedbackContext;
